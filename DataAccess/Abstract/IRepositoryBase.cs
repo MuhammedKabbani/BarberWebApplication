@@ -11,12 +11,18 @@ namespace DataAccess.Abstract
         IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> GetAllIncluded(params Expression<System.Func<TEntity, object>>[] includeProperties);
         IEnumerable<TEntity> GetAllIncluded(Expression<Func<TEntity, bool>> predicate, params Expression<System.Func<TEntity, object>>[] includeProperties);
-        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+
         TEntity? SingleOrDefault(Expression<Func<TEntity, bool>> predicate);
+        TEntity? SingleOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<System.Func<TEntity, object>>[] includeProperties);
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entities);
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);
+
+        int Count();
+        int Count(Expression<Func<TEntity, bool>> predicate);
+        bool Any();
+        bool Any(Expression<Func<TEntity, bool>> predicate);
 
     }
 }

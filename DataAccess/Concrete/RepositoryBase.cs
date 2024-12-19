@@ -9,9 +9,6 @@ namespace DataAccess.Concrete
 {
     public class RepositoryBase<TEntity, TContext> : IRepositoryBase<TEntity, TContext> where TEntity : class, IEntity, new() where TContext : DbContext, new()
     {
-
-
-
         /// <summary>
         /// Add entity to the context
         /// </summary>
@@ -38,18 +35,6 @@ namespace DataAccess.Concrete
         }
 
         /// <summary>
-        /// Find entities based on the predicate
-        /// </summary>
-        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
-        {
-            using (var context = new TContext())
-            {
-                return context.Set<TEntity>().Where(predicate);
-            }
-            
-        }
-
-        /// <summary>
         /// Get entity by id
         /// </summary>
         public TEntity? Get(object id)
@@ -59,7 +44,23 @@ namespace DataAccess.Concrete
                 return context.Set<TEntity>().Find(id);
             }
         }
-
+        /// <summary>
+        /// get single entity based on the predicate
+        /// </summary>
+        public TEntity? SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        {
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().SingleOrDefault(predicate);
+            }
+        }
+        /// <summary>
+        /// get single entity based on the predicate with included properties
+        /// </summary>
+        public TEntity? SingleOrDefault(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            return GetAllIncluded(predicate, includeProperties).AsQueryable().SingleOrDefault(predicate);
+        }
         /// <summary>
         /// Get all entities
         /// </summary>
@@ -70,7 +71,9 @@ namespace DataAccess.Concrete
                 return context.Set<TEntity>().ToList();
             }
         }
-
+        /// <summary>
+        /// get all entities based on the predicate
+        /// </summary>
         public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate)
         {
             using (var context = new TContext())
@@ -78,7 +81,9 @@ namespace DataAccess.Concrete
                 return context.Set<TEntity>().Where(predicate).ToList();
             }
         }
-
+        /// <summary>
+        /// get all entities with included properties
+        /// </summary>
         public IEnumerable<TEntity> GetAllIncluded(params Expression<Func<TEntity, object>>[] includeProperties)
         {
             using (var context = new TContext())
@@ -91,7 +96,9 @@ namespace DataAccess.Concrete
                 return query.ToList();
             }
         }
-
+        /// <summary>
+        /// get all entities with included properties based on the predicate
+        /// </summary>
         public IEnumerable<TEntity> GetAllIncluded(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties)
         {
             using (var context = new TContext())
@@ -126,15 +133,49 @@ namespace DataAccess.Concrete
                 context.Set<TEntity>().RemoveRange(entities);
             }
         }
+
         /// <summary>
-        /// get single entity based on the predicate
+        /// check if there is any entity in the context
         /// </summary>
-        public TEntity? SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        public bool Any()
         {
             using (var context = new TContext())
             {
-                return context.Set<TEntity>().SingleOrDefault(predicate);
+                return context.Set<TEntity>().Any();
             }
         }
+
+        /// <summary>
+        /// check if there is any entity in the context based on the predicate
+        /// </summary>
+        public bool Any(Expression<Func<TEntity, bool>> predicate)
+        {
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().Any(predicate);
+            }
+        }
+        /// <summary>
+        /// count all entities in the context
+        /// </summary>
+        public int Count()
+        {
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().Count();
+            }
+        }
+        /// <summary>
+        /// count all entities in the context based on the predicate
+        /// </summary>
+        public int Count(Expression<Func<TEntity, bool>> predicate)
+        {
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().Count(predicate);
+            }
+        }
+
+
     }
 }
